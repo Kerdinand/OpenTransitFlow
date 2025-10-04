@@ -11,7 +11,7 @@ namespace OpenTransitFlow.Connection
         /// <summary>
         /// Used to capture incoming Stream as of now.
         /// </summary>
-        TcpListener server = new TcpListener(IPAddress.Parse("127.0.0.1"), 80);
+        TcpListener server = new TcpListener(IPAddress.Parse("127.0.0.1"), 5000);
 
         /// <summary>
         /// Basic Function to start a new WebSocketConnection on default ip/port.
