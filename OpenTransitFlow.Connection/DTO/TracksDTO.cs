@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Text.Json.Serialization;
 
 namespace OpenTransitFlow.Connection.DTO
 {
@@ -14,7 +13,7 @@ namespace OpenTransitFlow.Connection.DTO
         public string Type { get; set; }
         public string Uuid { get; set; }
     }
-    
+
     public class CubicBezierCurve
     {
         public Vector3 V0 { get; set; }
