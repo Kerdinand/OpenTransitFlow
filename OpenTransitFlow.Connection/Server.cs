@@ -1,5 +1,7 @@
-﻿using System.Net.WebSockets;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 namespace OpenTransitFlow.Connection
 {
@@ -23,6 +25,19 @@ namespace OpenTransitFlow.Connection
             return await context.WebSockets.AcceptWebSocketAsync();
         }
 
+        /// <summary>
+        /// Serialize input Stream to Object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="socket"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        internal async Task<T> DeserializeFromStream<T>(WebSocket socket, HttpContext context)
+        {
+            var jsonString = await ReadStreamToSync(socket, context);
+            return JsonSerializer.Deserialize<T>(jsonString) ?? throw new Exception("Could not create DTO!");
+        }
+
 #if DEBUG
         /// <summary>
         /// DEBUG Method to read stream into string.
@@ -30,6 +45,12 @@ namespace OpenTransitFlow.Connection
         /// <param name="socket">Current Socket with connection</param>
         /// <returns>Returns received string</returns>
         internal async Task<string> ReadStreamToSyncDebug(WebSocket socket, HttpContext context)
+        {
+            return await ReadStreamToSync(socket, context);
+        }
+#endif
+        
+        private async Task<string> ReadStreamToSync(WebSocket socket, HttpContext context)
         {
             byte[] buffer = new byte[64 * 1024];
             var sb = new StringBuilder();
@@ -58,12 +79,5 @@ namespace OpenTransitFlow.Connection
             // If this point is reached nothing was there to be printed, so empty strings are returned;
             return String.Empty;
         }
-#else
-        [Obsolete]
-        internal async Task<string> ReadStreamToSyncDebug(WebSocket socket, HttpContext context)
-        {
-            throw new Exception("This method only exisits in DEBUG mode, dont use in production!!!")
-        }
-#endif
     }
 }
