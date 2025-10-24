@@ -12,7 +12,6 @@ namespace OpenTransitFlow.Connection.Controller
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                Console.WriteLine("received");
             }
         }
     }
