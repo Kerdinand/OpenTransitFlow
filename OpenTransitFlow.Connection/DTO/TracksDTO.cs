@@ -4,21 +4,21 @@ namespace OpenTransitFlow.Connection
 {
     public class BaseTrackJson
     {
-        public CubicBezierCurve BezierCurve { get; set; }
-        public string InboundDiverging { get; set; }
-        public string InboundTrack { get; set; }
-        public int LerpSteps { get; set; } = 100;
-        public string OutboundDiverging { get; set; }
-        public string OutboundTrack { get; set; }
-        public string Type { get; set; }
-        public string Uuid { get; set; }
+        public CubicBezierCurve bezierCurve { get; set; }
+        public string inboundDiverging { get; set; }
+        public string inboundTrack { get; set; }
+        public int lerpSteps { get; set; } = 100;
+        public string outboundDiverging { get; set; }
+        public string outboundTrack { get; set; }
+        public string type { get; set; }
+        public string uuid { get; set; }
     }
 
     public class CubicBezierCurve
     {
-        public Vector3 V0 { get; set; }
-        public Vector3 V1 { get; set; }
-        public Vector3 V2 { get; set; }
-        public Vector3 V3 { get; set; }
+        public double[] v0 { get; set; }
+        public double[] v1 { get; set; }
+        public double[] v2 { get; set; }
+        public double[] v3 { get; set; }
     }
 }
