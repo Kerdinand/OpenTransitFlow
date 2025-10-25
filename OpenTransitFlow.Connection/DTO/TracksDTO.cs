@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace OpenTransitFlow.Connection.DTO
+namespace OpenTransitFlow.Connection
 {
     public class BaseTrackJson
     {
