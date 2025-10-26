@@ -79,5 +79,22 @@ namespace OpenTransitFlow.Connection
             // If this point is reached nothing was there to be printed, so empty strings are returned;
             return String.Empty;
         }
+
+
+        private async Task<int> SendStream(WebSocket socket, HttpContext context, string message)
+        {
+            byte[] messageBuffer = Encoding.UTF8.GetBytes(message);
+            await socket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, context.RequestAborted);
+            return messageBuffer.Length;
+        }
+        /// <summary>
+        /// Method that can be used to send truncs of data through the websocket.
+        /// </summary>
+        /// <returns>Message buffer length</returns>
+        public async Task<int> SendAsync<T>(WebSocket socket, HttpContext context, T obj)
+        {
+            string message = JsonSerializer.Serialize(obj);
+            return await SendStream(socket, context, message);
+        }
     }
 }

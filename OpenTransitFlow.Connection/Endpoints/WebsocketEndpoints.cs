@@ -8,9 +8,7 @@ namespace OpenTransitFlow.Connection.Endpoints
             {
                 using var socket = await server.AcceptWebSocketAsync(context);
                 var result = await server.ReadStreamToSyncDebug(socket, context);
-
                 var tracksDTO = await server.DeserializeFromStream<List<BaseTrackJson>>(socket, context);
-                Console.WriteLine(tracksDTO[0]);
             });
         }
     }
