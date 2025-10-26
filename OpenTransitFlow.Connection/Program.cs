@@ -1,6 +1,6 @@
 // Program.cs
-using OpenTransitFlow.Connection;
 using OpenTransitFlow.Connection.Endpoints;
+using OpenTransitFlow.Connection.Logic.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();

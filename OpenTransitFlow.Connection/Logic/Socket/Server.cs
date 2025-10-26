@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
-namespace OpenTransitFlow.Connection
+namespace OpenTransitFlow.Connection.Logic.Socket
 {
     public class Server
     {
@@ -77,7 +77,7 @@ namespace OpenTransitFlow.Connection
             }
 
             // If this point is reached nothing was there to be printed, so empty strings are returned;
-            return String.Empty;
+            return string.Empty;
         }
 
 

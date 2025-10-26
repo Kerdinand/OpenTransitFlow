@@ -1,3 +1,5 @@
+using OpenTransitFlow.Connection.Logic.Socket;
+
 namespace OpenTransitFlow.Connection.Endpoints
 {
     public static class WebSocketEndpoints
