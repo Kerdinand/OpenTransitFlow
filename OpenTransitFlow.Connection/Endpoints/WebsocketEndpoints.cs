@@ -1,4 +1,6 @@
 using OpenTransitFlow.Connection.Logic.Socket;
+using OpenTransitFlow.Connection.Graph;
+using QuikGraph;
 
 namespace OpenTransitFlow.Connection.Endpoints
 {
@@ -10,9 +12,10 @@ namespace OpenTransitFlow.Connection.Endpoints
             {
                 using var socket = await server.AcceptWebSocketAsync(context);
                 var result = await server.ReadStreamToSyncDebug(socket, context);
-                var tracksDTO = await server.DeserializeFromStream<List<BaseTrackJson>>(socket, context);
-
-                var graph = new GraphFactory().Create(tracksDTO);
+                var tracksDTO = server.DeserializeFromStream<List<BaseTrackJson>>(socket, context).Result;
+                
+                var graph = GraphFactory.Create(tracksDTO);
+                GraphPngRenderer.Render(graph, "./test.png");
             });
         }
     }

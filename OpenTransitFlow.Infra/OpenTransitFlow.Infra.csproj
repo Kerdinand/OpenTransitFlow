@@ -13,12 +13,4 @@
     <PackageReference Include="System.Windows.Extensions" Version="9.0.8" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BusinessObjects\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OpenTransitFlow.Connection\OpenTransitFlow.Connection.csproj" />
-  </ItemGroup>
-
 </Project>
