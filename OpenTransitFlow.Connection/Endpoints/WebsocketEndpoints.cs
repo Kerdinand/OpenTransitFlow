@@ -15,7 +15,7 @@ namespace OpenTransitFlow.Connection.Endpoints
                 var tracksDTO = server.DeserializeFromStream<List<BaseTrackJson>>(socket, context).Result;
                 
                 var graph = GraphFactory.Create(tracksDTO);
-                GraphPngRenderer.Render(graph, "./test.png");
+                GraphPngRenderer.Renderer(graph);
             });
         }
     }

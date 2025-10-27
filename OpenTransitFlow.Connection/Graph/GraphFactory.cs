@@ -40,7 +40,7 @@ namespace OpenTransitFlow.Connection.Graph
 
             foreach (var entry in edges)
             {
-                graph.AddEdge(new NetworkGraphEdge(graph.Vertices.Where(node => node.uuid == entry.Item1).First(), graph.Vertices.Where(node => node.uuid == entry.Item1).First()));
+                graph.AddEdge(new NetworkGraphEdge(graph.Vertices.Where(node => node.uuid == entry.Item1).First(), graph.Vertices.Where(node => node.uuid == entry.Item2).First()));
             }
             return graph;
         }

@@ -5,7 +5,7 @@ namespace OpenTransitFlow.Connection.Graph
 {
     public class NetworkGraphEdge : IEdge<NetworkGraphVertex>
     {
-        public NetworkGraphEdge(NetworkGraphVertex source, NetworkGraphVertex target)
+        public NetworkGraphEdge(NetworkGraphVertex source, NetworkGraphVertex target) : base()
         {
             this.source = source;
             this.target = target;
