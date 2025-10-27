@@ -1,15 +1,21 @@
-﻿using QuikGraph;
+﻿using System.Diagnostics;
+using QuikGraph;
 
 namespace OpenTransitFlow.Infra.Graph
 {
     internal class NetworkGraphEdge : IEdge<NetworkGraphVertex>
     {
-        public NetworkGraphEdge()
+        public NetworkGraphEdge(NetworkGraphVertex source, NetworkGraphVertex target)
         {
+            this.source = source;
+            this.target = target;
         }
 
-        NetworkGraphVertex IEdge<NetworkGraphVertex>.Source => throw new NotImplementedException();
+        private NetworkGraphVertex source;
+        private NetworkGraphVertex target;
 
-        NetworkGraphVertex IEdge<NetworkGraphVertex>.Target => throw new NotImplementedException();
+        NetworkGraphVertex IEdge<NetworkGraphVertex>.Source => source;
+
+        NetworkGraphVertex IEdge<NetworkGraphVertex>.Target => target;
     }
 }
