@@ -1,4 +1,6 @@
-﻿using OpenTransitFlow.Connection;
+﻿/*
+
+using OpenTransitFlow.Connection;
 using QuikGraph;
 using QuikGraph.Algorithms;
 using QuikGraph.Graphviz;
@@ -47,3 +49,4 @@ namespace OpenTransitFlow.Infra.Graph
         }
     }
 }
+*/

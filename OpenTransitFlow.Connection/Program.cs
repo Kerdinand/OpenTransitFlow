@@ -1,5 +1,6 @@
 // Program.cs
 using OpenTransitFlow.Connection.Endpoints;
+using OpenTransitFlow.Connection.Graph;
 using OpenTransitFlow.Connection.Logic.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,5 +11,12 @@ builder.WebHost.UseUrls("http://0.0.0.0:5189");
 app.UseWebSockets();
 Server server = new Server();
 app.MapWebSocket(server);
+
+
+var factory = GraphFactory.CreateDemoFactory();
+var example = factory.GetGraph();
+GraphPngRenderer.Renderer(example);
+factory.SplitEdge(factory.GetRandomEdge());
+GraphPngRenderer.Renderer(example);
 
 app.Run();

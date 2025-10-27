@@ -11,6 +11,8 @@ namespace OpenTransitFlow.Infra.Graph
             this.target = target;
         }
 
+        public string UUID { get; set; }
+
         private NetworkGraphVertex source;
         private NetworkGraphVertex target;
 
