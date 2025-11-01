@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTransitFlow.Connection"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTransitFlow.Infra", "OpenTransitFlow.Infra\OpenTransitFlow.Infra.csproj", "{041B634A-A48E-6597-8D9B-2C2814671A02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTransitFlow.Infra.Tests", "OpenTransitFlow.Infra.Tests\OpenTransitFlow.Infra.Tests.csproj", "{D101AE93-520C-4FC9-857E-3B708BCF10D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{041B634A-A48E-6597-8D9B-2C2814671A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{041B634A-A48E-6597-8D9B-2C2814671A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{041B634A-A48E-6597-8D9B-2C2814671A02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D101AE93-520C-4FC9-857E-3B708BCF10D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D101AE93-520C-4FC9-857E-3B708BCF10D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D101AE93-520C-4FC9-857E-3B708BCF10D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D101AE93-520C-4FC9-857E-3B708BCF10D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

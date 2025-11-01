@@ -1,5 +1,4 @@
 using OpenTransitFlow.Connection.Logic.Socket;
-using OpenTransitFlow.Connection.Graph;
 using QuikGraph;
 
 namespace OpenTransitFlow.Connection.Endpoints

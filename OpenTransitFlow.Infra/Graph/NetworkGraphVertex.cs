@@ -2,7 +2,7 @@
 
 namespace OpenTransitFlow.Infra.Graph
 {
-    internal class NetworkGraphVertex
+    public class NetworkGraphVertex
     {
         public NetworkGraphVertex(string uuid, Vector2 pos)
         {
