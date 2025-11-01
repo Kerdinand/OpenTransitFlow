@@ -30,17 +30,17 @@ namespace OpenTransitFlow.Infra.Graph
         /// Returns the direct length of the edge, disregardings its real shape
         /// ONLY USE FOR ESTIMATES AND NON CURVING ELEMENTS
         /// </summary>
-        internal double directLength => Math.Abs(Vector2.Distance(source.position,target.position));
+        internal double directLength => Math.Abs(Vector2.Distance(source.position, target.position));
 
         /// <summary>
         /// Returns vmax of track. returns 160 if no vmaxFunction is defined.
         /// </summary>
-        internal Func<NetworkGraphEdge, int> vmax => vmaxFunction ?? (_ => 160);
+        internal int vmax => vmaxFunction is null ? 160 : vmaxFunction.Invoke(this);
 
         /// <summary>
         /// Function to calculate max speed
         /// </summary>
-        internal Func<NetworkGraphEdge, int> vmaxFunction;
+        internal Func<NetworkGraphEdge, int>? vmaxFunction;
 
         NetworkGraphVertex IEdge<NetworkGraphVertex>.Source => source;
 

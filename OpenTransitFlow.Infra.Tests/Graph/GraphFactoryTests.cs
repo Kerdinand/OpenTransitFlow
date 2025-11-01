@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using OpenTransitFlow.Infra.Graph;
+using System.Numerics;
 
 namespace OpenTransitFlow.Infra.Tests.Graph
 {
@@ -12,6 +13,20 @@ namespace OpenTransitFlow.Infra.Tests.Graph
             factory.AddTestTrack();
             var result = GraphPngRenderer.Renderer(factory.GetGraph());
             Assert.That("digraph G {\r\n0;\r\n1;\r\n2;\r\n3;\r\n4;\r\n5;\r\n0 -> 4;\r\n1 -> 4;\r\n1 -> 5;\r\n2 -> 4;\r\n3 -> 5;\r\n4 -> 0;\r\n4 -> 1;\r\n5 -> 1;\r\n5 -> 2;\r\n5 -> 3;\r\n}", Is.EqualTo(result.ToString()));
+        }
+
+        [Test]
+        public void TestVmax()
+        {
+            NetworkGraphVertex start = new NetworkGraphVertex("start", new Vector2(0, 0));
+            NetworkGraphVertex end = new NetworkGraphVertex("end", new Vector2(0, 10));
+            NetworkGraphEdge testEdge160 = new NetworkGraphEdge(start, end, "TestTrack");
+            NetworkGraphEdge testEdge100 = new NetworkGraphEdge(start, end, "TestTrack100");
+
+            testEdge100.vmaxFunction = edge => 100;
+            
+            Assert.That(testEdge100.vmax,Is.EqualTo(100));
+            Assert.That(testEdge160.vmax, Is.EqualTo(160));
         }
     }
 }
