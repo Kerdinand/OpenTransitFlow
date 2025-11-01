@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using QuikGraph;
 
 namespace OpenTransitFlow.Infra.Graph
@@ -20,10 +21,26 @@ namespace OpenTransitFlow.Infra.Graph
         private NetworkGraphVertex source;
         private NetworkGraphVertex target;
 
-/// <summary>
-/// Dummy value for now. Should represent time/priority to take such link.
-/// </summary>
-        public double weight { get; set; } = 1 / new Random().NextDouble() * 100;
+        /// <summary>
+        /// Dummy value for now. Should represent time/priority to take such link.
+        /// </summary>
+        internal double weight { get; set; } = 1 / new Random().NextDouble() * 100;
+
+        /// <summary>
+        /// Returns the direct length of the edge, disregardings its real shape
+        /// ONLY USE FOR ESTIMATES AND NON CURVING ELEMENTS
+        /// </summary>
+        internal double directLength => Math.Abs(Vector2.Distance(source.position,target.position));
+
+        /// <summary>
+        /// Returns vmax of track. returns 160 if no vmaxFunction is defined.
+        /// </summary>
+        internal Func<NetworkGraphEdge, int> vmax => vmaxFunction ?? (_ => 160);
+
+        /// <summary>
+        /// Function to calculate max speed
+        /// </summary>
+        internal Func<NetworkGraphEdge, int> vmaxFunction;
 
         NetworkGraphVertex IEdge<NetworkGraphVertex>.Source => source;
 
