@@ -14,6 +14,7 @@ namespace OpenTransitFlow.Connection.Graph
         /// Stores the graph.
         /// </summary>
         private BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> _graph;
+        public BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> GetGraph() => _graph;
         /// <summary>
         /// Stores edges for quicker lookup.
         /// </summary>
@@ -80,20 +81,28 @@ namespace OpenTransitFlow.Connection.Graph
             _graph.AddEdge(newEdge);
         }
 
+        /// <summary>
+        /// Method to add a new node to an existing edge.
+        /// </summary>
         public void SplitEdge(NetworkGraphEdge edge)
         {
             if (!_edges.ContainsKey(edge.UUID)) return;
+            var intermediateNode = new NetworkGraphVertex((_nodes.Count + 1).ToString(), [0, 0]);
+            SplitEdge(edge, intermediateNode);
+        }
+        /// <summary>
+        /// <inheritdoc cref="SplitEdge"/> Takes predefined node.
+        /// </summary>
+        public void SplitEdge(NetworkGraphEdge edge, NetworkGraphVertex node)
+        {
+            var intermediateNode = node;
             var source = ((IEdge<NetworkGraphVertex>)edge).Source;
             var target = ((IEdge<NetworkGraphVertex>)edge).Target;
-            var intermediateNode = new NetworkGraphVertex(source + "I", [0, 0]);
-
-            Console.WriteLine(source + "C->" + target);
-
             _edges.Remove(edge.UUID);
             _graph.RemoveEdge(edge);
 
-            var firstHalfEdge = new NetworkGraphEdge(source, intermediateNode, source + "->" + intermediateNode);
-            var secondHalfEdge = new NetworkGraphEdge(intermediateNode, target, "->" + target);
+            var firstHalfEdge = new NetworkGraphEdge(source, intermediateNode, source.uuid + "->" + intermediateNode.uuid);
+            var secondHalfEdge = new NetworkGraphEdge(intermediateNode, target, intermediateNode.uuid + "->" + target.uuid);
 
             _nodes.Add(intermediateNode.uuid, intermediateNode);
             _edges.Add(firstHalfEdge.UUID, firstHalfEdge);
@@ -103,8 +112,6 @@ namespace OpenTransitFlow.Connection.Graph
             _graph.AddEdge(firstHalfEdge);
             _graph.AddEdge(secondHalfEdge);
         }
-
-        public BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> GetGraph() => _graph;
 
         [Obsolete]
         public static BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> Create(IEnumerable<BaseTrackJson> tracks)
