@@ -9,8 +9,8 @@ namespace OpenTransitFlow.Infra.Graph
         /// <summary>
         /// Stores the graph.
         /// </summary>
-        private BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> _graph;
-        public BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> GetGraph() => _graph;
+        private BidirectionalGraph<INetworkGraphVertex, NetworkGraphEdge> _graph;
+        public BidirectionalGraph<INetworkGraphVertex, NetworkGraphEdge> GetGraph() => _graph;
         /// <summary>
         /// Stores edges for quicker lookup.
         /// </summary>
@@ -26,7 +26,7 @@ namespace OpenTransitFlow.Infra.Graph
         /// </summary>
         public GraphFactory(bool allowParallelEdges = true)
         {
-            _graph = new BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge>(allowParallelEdges);
+            _graph = new BidirectionalGraph<INetworkGraphVertex, NetworkGraphEdge>(allowParallelEdges);
             _edges = new Dictionary<string, NetworkGraphEdge>();
             _nodes = new Dictionary<string, NetworkGraphVertex>();
         }
@@ -188,7 +188,7 @@ namespace OpenTransitFlow.Infra.Graph
         /// <returns> 
         /// Returns Graph instance created by <see cref="CreateDemoFactory"/>
         /// </returns>
-        public static BidirectionalGraph<NetworkGraphVertex, NetworkGraphEdge> CreateDemoGraph()
+        public static BidirectionalGraph<INetworkGraphVertex, NetworkGraphEdge> CreateDemoGraph()
         {
             return GraphFactory.CreateDemoFactory().GetGraph();
         }

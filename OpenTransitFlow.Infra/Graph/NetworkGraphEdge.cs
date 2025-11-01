@@ -4,9 +4,9 @@ using QuikGraph;
 
 namespace OpenTransitFlow.Infra.Graph
 {
-    public class NetworkGraphEdge : IEdge<NetworkGraphVertex>
+    public class NetworkGraphEdge : IEdge<BaseNetworkGraphVertex>
     {
-        public NetworkGraphEdge(NetworkGraphVertex source, NetworkGraphVertex target, string uuid) : base()
+        public NetworkGraphEdge(BaseNetworkGraphVertex source, BaseNetworkGraphVertex target, string uuid) : base()
         {
             this.source = source;
             this.target = target;
@@ -18,8 +18,10 @@ namespace OpenTransitFlow.Infra.Graph
 
         public string UUID => _uuid;
 
-        private NetworkGraphVertex source;
-        private NetworkGraphVertex target;
+        private BaseNetworkGraphVertex source;
+        public BaseNetworkGraphVertex Source => source;
+        private BaseNetworkGraphVertex target;
+        public BaseNetworkGraphVertex Target => target;
 
         /// <summary>
         /// Dummy value for now. Should represent time/priority to take such link.
@@ -42,9 +44,9 @@ namespace OpenTransitFlow.Infra.Graph
         /// </summary>
         internal Func<NetworkGraphEdge, int>? vmaxFunction;
 
-        NetworkGraphVertex IEdge<NetworkGraphVertex>.Source => source;
+        BaseNetworkGraphVertex IEdge<BaseNetworkGraphVertex>.Source => source;
 
-        NetworkGraphVertex IEdge<NetworkGraphVertex>.Target => target;
+        BaseNetworkGraphVertex IEdge<BaseNetworkGraphVertex>.Target => target;
 
         public override string ToString()
         {

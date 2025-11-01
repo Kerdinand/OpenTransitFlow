@@ -28,5 +28,28 @@ namespace OpenTransitFlow.Infra.Tests.Graph
             Assert.That(testEdge100.vmax,Is.EqualTo(100));
             Assert.That(testEdge160.vmax, Is.EqualTo(160));
         }
+
+        [Test]
+        public void TestIfVehicleCanMove()
+        {
+            var node1 = new NetworkGraphVertex("start", [0, 0]);
+            var signal = new NetworkGraphVertexSignal("signal", [10, 0]);
+            var node2 = new NetworkGraphVertex("end", [20, 0]);
+
+            var track1 = new NetworkGraphEdge(node1, signal, "T1");
+            var track2 = new NetworkGraphEdge(signal, node2, "T2");
+
+            var path = new NetworkGraphEdge[] { track1, track2 };
+
+            var testTrain = new Train("testTrain", "", 100, path, track1);
+
+            Assert.That(testTrain.currentEdge.UUID, Is.EqualTo("T1"));
+            var result = testTrain.MoveVehicle();
+            Assert.That(testTrain.currentEdge.UUID, Is.EqualTo("T2"));
+            Assert.That(result, Is.EqualTo(VehicleMoveStatus.MOVING));
+            result = testTrain.MoveVehicle();
+            Assert.That(testTrain.currentEdge.UUID, Is.EqualTo("T2"));
+            Assert.That(result, Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+        }
     }
 }

@@ -2,21 +2,18 @@
 
 namespace OpenTransitFlow.Infra.Graph
 {
-    public class NetworkGraphVertex
+    public class NetworkGraphVertex : BaseNetworkGraphVertex
     {
         public NetworkGraphVertex(string uuid, Vector2 pos)
+    : base(uuid, pos)
         {
-            this.uuid = uuid;
-            position = pos;
         }
 
-        public NetworkGraphVertex(string uuid, int[] pos)
+        public NetworkGraphVertex(string uuid, double[] pos)
+            : base(uuid, new Vector2((float)pos[0], (float)pos[1]))
         {
-            this.uuid = uuid;
-            this.position = new Vector2(pos[0], pos[1]);
         }
 
-        public Vector2 position { get; set; }
-        public string uuid { get; set; }
+
     }
 }
