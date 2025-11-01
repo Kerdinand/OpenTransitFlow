@@ -139,5 +139,42 @@ namespace OpenTransitFlow.Infra.Tests.Graph
 
             Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
         }
+
+        [Test]
+        public void CheckSwitchNode()
+        {
+
+            var factory = new GraphFactory();
+            var node0 = new NetworkGraphVertex("N0", [0, 0]);
+            var node1 = new NetworkGraphVertexSignal("N1", [0, 0]);
+            var node2 = new NetworkGraphVertexSwitch("N2", [0, 0]);
+            var node3 = new NetworkGraphVertex("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+            factory.AddNodeRange(new BaseNetworkGraphVertex[] { node0, node1, node2 });
+            factory.AddEdge("T0", "N0", "N1", true);
+            factory.AddEdge("T1", "N1", "N2", true);
+            var track0I = factory.GetEdge("T0I");
+            var track0II = factory.GetEdge("T0II");
+            var track1I = factory.GetEdge("T1I");
+            var track1II = factory.GetEdge("T1II");
+
+            node2.AddInboundTrack(track1I);
+            
+           
+            var track2 = new NetworkGraphEdge(node2, node3, "T2");
+            var track3 = new NetworkGraphEdge(node4, node2, "T3");
+            node2.AddOutboundTracks(track2);
+            node2.AddOutboundTracks(track3);
+            var path1 = new NetworkGraphEdge[] { track0I ,track1I, track2 };
+            var path2 = new NetworkGraphEdge[] {track3, track1II, track0II };
+
+            var testTrain1 = new Train("Train1", "", 100, path1, track0I);
+            //var testTrain2 = new Train("Train2", "", 100, path2, track3);
+            
+            //Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+        }
     }
 }
