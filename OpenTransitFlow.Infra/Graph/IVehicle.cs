@@ -29,6 +29,5 @@ namespace OpenTransitFlow.Infra.Graph
         /// Current Edge the vehicle is on.
         /// </summary>
         NetworkGraphEdge currentEdge { get; set; }
-        
     }
 }

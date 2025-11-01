@@ -51,5 +51,93 @@ namespace OpenTransitFlow.Infra.Tests.Graph
             Assert.That(testTrain.currentEdge.UUID, Is.EqualTo("T2"));
             Assert.That(result, Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
         }
+
+        [Test]
+        public void CheckIfTrackIsBlockedBasicTest()
+        {
+            var node1 = new NetworkGraphVertex("N1", [0, 0]);
+            var node2 = new NetworkGraphVertex("N2", [0, 0]);
+            var node3 = new NetworkGraphVertex("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+
+            var track1 = new NetworkGraphEdge(node1, node2, "T1");
+            var track2 = new NetworkGraphEdge(node2, node3, "T2");
+            var track3 = new NetworkGraphEdge(node3, node4, "T3");
+
+            var path = new NetworkGraphEdge[] { track1, track2, track3 };
+
+            var testTrain1 = new Train("Train1", "", 100, path, track1);
+            var testTrain2 = new Train("Train2", "", 100, path, track2 );
+
+            Assert.That(track1.IsBlocked, Is.EqualTo(true));
+            Assert.That(track2.IsBlocked, Is.EqualTo(true));
+            Assert.That(track3.IsBlocked, Is.EqualTo(false));
+
+
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.UNKNOWN));
+            testTrain2.Remove();
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+        }
+
+        [Test]
+        public void CheckIfTrackIsBlockedWithSignalTest()
+        {
+            var node1 = new NetworkGraphVertex("N1", [0, 0]);
+            var node2 = new NetworkGraphVertexSignal("N2", [0, 0]);
+            var node3 = new NetworkGraphVertexSignal("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+
+            var track1 = new NetworkGraphEdge(node1, node2, "T1");
+            var track2 = new NetworkGraphEdge(node2, node3, "T2");
+            var track3 = new NetworkGraphEdge(node3, node4, "T3");
+
+            var path = new NetworkGraphEdge[] { track1, track2, track3 };
+
+            var testTrain1 = new Train("Train1", "", 100, path, track1);
+            var testTrain2 = new Train("Train2", "", 100, path, track2);
+
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            testTrain2.Remove();
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+        }
+
+        [Test]
+        public void CheckTwoWayTrack()
+        {
+
+            var factory = new GraphFactory();
+
+            var node1 = new NetworkGraphVertex("N1", [0, 0]);
+            var node2 = new NetworkGraphVertexSignal("N2", [0, 0]);
+            var node3 = new NetworkGraphVertexSignal("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+            factory.AddNodeRange(new BaseNetworkGraphVertex[] { node1, node2 });
+            factory.AddEdge("T1", "N1", "N2", true);
+            var track1I = factory.GetEdge("T1I");
+            var track1II = factory.GetEdge("T1II");
+            
+            var track2 = new NetworkGraphEdge(node2, node3, "T2");
+            var track3 = new NetworkGraphEdge(node4, node2, "T3");
+
+            var path1 = new NetworkGraphEdge[] { track1I, track2 };
+            var path2 = new NetworkGraphEdge[] {track3, track1II };
+
+            var testTrain1 = new Train("Train1", "", 100, path1, track1I);
+            var testTrain2 = new Train("Train2", "", 100, path2, track3);
+            Assert.That(track1I.UUID, Is.EqualTo("T1I"));
+            Assert.That(track1II.UUID, Is.EqualTo("T1II"));
+            Assert.That(track1I.oppositeDirectionEdge.UUID, Is.EqualTo("T1II"));
+            Assert.That(track1II.oppositeDirectionEdge.UUID, Is.EqualTo("T1I"));
+
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+        }
     }
 }

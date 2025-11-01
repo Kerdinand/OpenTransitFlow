@@ -6,11 +6,14 @@ namespace OpenTransitFlow.Infra.Graph
 {
     public class NetworkGraphEdge : IEdge<BaseNetworkGraphVertex>
     {
-        public NetworkGraphEdge(BaseNetworkGraphVertex source, BaseNetworkGraphVertex target, string uuid) : base()
+        public NetworkGraphEdge(BaseNetworkGraphVertex source, BaseNetworkGraphVertex target, string uuid, bool isTwoWay = false) : base()
         {
             this.source = source;
             this.target = target;
             this._uuid = uuid;
+            source.outboundEdges.Add(this.UUID, this);
+            target.inboundEdges.Add(this.UUID, this);
+            this.IsTwoWay = isTwoWay;
         }
 
 
@@ -44,9 +47,14 @@ namespace OpenTransitFlow.Infra.Graph
         /// </summary>
         internal Func<NetworkGraphEdge, int>? vmaxFunction;
 
+        internal volatile bool IsBlocked = false;
+
         BaseNetworkGraphVertex IEdge<BaseNetworkGraphVertex>.Source => source;
 
         BaseNetworkGraphVertex IEdge<BaseNetworkGraphVertex>.Target => target;
+
+        public bool IsTwoWay = false;
+        public NetworkGraphEdge oppositeDirectionEdge = null;
 
         public override string ToString()
         {

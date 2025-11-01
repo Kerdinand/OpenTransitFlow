@@ -16,6 +16,7 @@ namespace OpenTransitFlow.Infra.Graph
             this.vehicleMaxSpeed = vehicleMaxSpeed;
             CurrentPath = currentPath;
             this.currentEdge = currentEdge;
+            this.currentEdge.IsBlocked = true;
         }
 
         public string Name { get; set; }
@@ -37,12 +38,34 @@ namespace OpenTransitFlow.Infra.Graph
             var currentIndex = CurrentPath.ToList().IndexOf(currentEdge);
             if (currentIndex == CurrentPath.ToList().Count - 1) return VehicleMoveStatus.REACHED_DESTINATION;
             var nextEdge = CurrentPath.ElementAt(currentIndex + 1);
-            if (currentEdge.Target is NetworkGraphVertexSignal && ((NetworkGraphVertexSignal)currentEdge.Target).AllowedVMax() != 0)
+            if (currentEdge.Target is NetworkGraphVertexSignal && ((NetworkGraphVertexSignal)currentEdge.Target).AllowedVMax(currentEdge) != 0)
             {
+                currentEdge.IsBlocked = false;
                 currentEdge = nextEdge;
+                currentEdge.IsBlocked = true;
+                return VehicleMoveStatus.MOVING;
+            }
+            if (currentEdge.Target is NetworkGraphVertexSignal && ((NetworkGraphVertexSignal)currentEdge.Target).AllowedVMax(currentEdge) == 0)
+            {
+                return VehicleMoveStatus.STOPPED_AT_SIGNAL;
+            }
+            if (currentEdge.IsBlocked && !nextEdge.IsBlocked)
+            {
+                currentEdge.IsBlocked = false;
+                currentEdge = nextEdge;
+                currentEdge.IsBlocked = true;
                 return VehicleMoveStatus.MOVING;
             }
             return VehicleMoveStatus.UNKNOWN;
+        }
+
+        /// <summary>
+        /// Removes Vehicle from current Edge
+        /// </summary>
+        public virtual void Remove()
+        {
+            currentEdge.IsBlocked = false;
+            currentEdge = null;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using QuikGraph;
 using QuikGraph.Algorithms;
+using System;
 using System.Numerics;
 
 namespace OpenTransitFlow.Infra.Graph
@@ -18,7 +19,7 @@ namespace OpenTransitFlow.Infra.Graph
         /// <summary>
         /// Stores the nodes for quicker lookup.
         /// </summary>
-        private Dictionary<string, NetworkGraphVertex> _nodes;
+        private Dictionary<string, BaseNetworkGraphVertex> _nodes;
 
         /// <summary>
         /// Creates empty BiderectionalGraph instances for GraphFactory to work.
@@ -28,7 +29,7 @@ namespace OpenTransitFlow.Infra.Graph
         {
             _graph = new BidirectionalGraph<INetworkGraphVertex, NetworkGraphEdge>(allowParallelEdges);
             _edges = new Dictionary<string, NetworkGraphEdge>();
-            _nodes = new Dictionary<string, NetworkGraphVertex>();
+            _nodes = new Dictionary<string, BaseNetworkGraphVertex>();
         }
 
         /// <summary>
@@ -56,12 +57,30 @@ namespace OpenTransitFlow.Infra.Graph
             AddNode(uuid, new Vector2(pos[0], pos[1]));
         }
 
+        public void AddNode(BaseNetworkGraphVertex newNode)
+        {
+            if (_nodes.ContainsKey(newNode.uuid))
+            {
+#if DEBUG
+                Console.WriteLine($"Node with {newNode.uuid} already exists");
+#endif
+                return;
+            }
+            _nodes.Add(newNode.uuid, newNode);
+            _graph.AddVertex(newNode);
+        }
+
+        public void AddNodeRange(IEnumerable<BaseNetworkGraphVertex> nodes)
+        {
+            foreach (BaseNetworkGraphVertex node in nodes) AddNode(node);
+        }
+
         /// <summary>
         /// Creates a new Edge between two already existing nodes.
         /// </summary>
         public void AddEdge(string uuid, string sourceId, string targetId)
         {
-            NetworkGraphVertex source, target;
+            BaseNetworkGraphVertex source, target;
             if (!_nodes.TryGetValue(sourceId, out source) || !_nodes.TryGetValue(targetId, out target) || _edges.ContainsKey(uuid))
             {
 #if DEBUG
@@ -75,6 +94,7 @@ namespace OpenTransitFlow.Infra.Graph
             NetworkGraphEdge newEdge = new NetworkGraphEdge(source, target, uuid);
             _edges.Add(newEdge.UUID, newEdge);
             _graph.AddEdge(newEdge);
+            
         }
 
         /// <summary>
@@ -84,9 +104,23 @@ namespace OpenTransitFlow.Infra.Graph
         {
             if (makeEdgeUndirected)
             {
-                AddEdge(uuid+"I", sourceId, targetId);
+                AddEdge(uuid + "I", sourceId, targetId);
                 AddEdge(uuid + "II", targetId, sourceId);
+                var edgeA = GetEdge(uuid + "I");
+                var edgeB = GetEdge(uuid + "II");
+                
+                edgeA.oppositeDirectionEdge = edgeB;
+                edgeB.oppositeDirectionEdge = edgeA;
             }
+        }
+        /// <summary>
+        /// Gets Edge based on Uuid
+        /// </summary>
+        /// <param name="uuid"></param>
+        /// <returns></returns>
+        public NetworkGraphEdge GetEdge(string  uuid)
+        {
+            return _edges[uuid];
         }
 
         /// <summary>
@@ -121,12 +155,12 @@ namespace OpenTransitFlow.Infra.Graph
             _graph.AddEdge(secondHalfEdge);
         }
 
-        public void RunDijkstra(NetworkGraphVertex start, NetworkGraphVertex end)
+        public void RunDijkstra(BaseNetworkGraphVertex start, BaseNetworkGraphVertex end)
         {
             var graph = this._graph;
             Func<NetworkGraphEdge, double> edgeCost = edge => edge.weight;
 
-            TryFunc<NetworkGraphVertex, IEnumerable<NetworkGraphEdge>> tryGetPaths = graph.ShortestPathsDijkstra(edgeCost, start);
+            TryFunc<BaseNetworkGraphVertex, IEnumerable<NetworkGraphEdge>> tryGetPaths = graph.ShortestPathsDijkstra(edgeCost, start);
 
             // Query path for given vertices
             if (tryGetPaths(end, out IEnumerable<NetworkGraphEdge> path))
@@ -204,14 +238,14 @@ namespace OpenTransitFlow.Infra.Graph
             return edge;
         }
 
-        public NetworkGraphVertex GetRandomVertex()
+        public BaseNetworkGraphVertex GetRandomVertex()
         {
             var vertex = _nodes.ElementAt(new Random().Next(_edges.Values.Count)).Value;
             return vertex;
         }
         #endif
 
-        public NetworkGraphVertex GetNode(string uuid)
+        public BaseNetworkGraphVertex GetNode(string uuid)
         {
             return _nodes[uuid];
         }

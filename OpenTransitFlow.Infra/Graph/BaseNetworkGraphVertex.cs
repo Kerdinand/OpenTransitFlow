@@ -23,5 +23,8 @@ namespace OpenTransitFlow.Infra.Graph
 
         public Vector2 position { get; set; }
         public string uuid { get; set; }
+
+        public Dictionary<string, NetworkGraphEdge> inboundEdges = new Dictionary<string, NetworkGraphEdge>();
+        public Dictionary<string, NetworkGraphEdge> outboundEdges = new Dictionary<string, NetworkGraphEdge>();
     }
 }
