@@ -30,7 +30,7 @@ namespace OpenTransitFlow.Infra.Vehicles
 
         public NetworkGraphEdge currentEdge { get; set; } = null;
 
-
+        public double progress = 0;
 
         public virtual async Task<VehicleMoveStatus> MoveVehicleAsync()
         {
