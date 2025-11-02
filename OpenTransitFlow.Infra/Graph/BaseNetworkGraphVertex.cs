@@ -36,7 +36,6 @@ namespace OpenTransitFlow.Infra.Graph
         {
             List<NetworkGraphEdge> result = new List<NetworkGraphEdge>();
             if (inboundEdges.Values.Contains(incomingEdge)) result = new List<NetworkGraphEdge>(outboundEdges.Values);
-            //if (outboundEdges.Values.Contains(incomingEdge)) result = new List<NetworkGraphEdge>(inboundEdges.Values);
             if (incomingEdge.oppositeDirectionEdge != null) result.Remove(incomingEdge.oppositeDirectionEdge);
             
             return result;

@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using QuikGraph;
+using System.Geometry;
 
 namespace OpenTransitFlow.Infra.Graph
 {
@@ -16,6 +16,16 @@ namespace OpenTransitFlow.Infra.Graph
             this.IsTwoWay = isTwoWay;
         }
 
+        public NetworkGraphEdge(BaseNetworkGraphVertex source, BaseNetworkGraphVertex target, string uuid, IList<Vector2> points, bool isTwoWay = false) : base()
+        {
+            this.source = source;
+            this.target = target;
+            this._uuid = uuid;
+            source.outboundEdges.Add(this.UUID, this);
+            target.inboundEdges.Add(this.UUID, this);
+            this.IsTwoWay = isTwoWay;
+            this.shape = new Bezier(points);
+        }
 
         private string _uuid;
 
@@ -36,7 +46,11 @@ namespace OpenTransitFlow.Infra.Graph
         /// ONLY USE FOR ESTIMATES AND NON CURVING ELEMENTS
         /// </summary>
         internal double directLength => Math.Abs(Vector2.Distance(source.position, target.position));
-
+        /// <summary>
+        /// If shape is defined length is set to the length of the actual shape.
+        /// If shape is not defined, directLenght <see cref="directLength"/> is returned.
+        /// </summary>
+        internal double length => shape == null ? directLength : shape.Length;
         /// <summary>
         /// Returns vmax of track. returns 160 if no vmaxFunction is defined.
         /// </summary>
@@ -46,6 +60,8 @@ namespace OpenTransitFlow.Infra.Graph
         /// Function to calculate max speed
         /// </summary>
         internal Func<NetworkGraphEdge, int>? vmaxFunction;
+
+        internal Bezier shape = null;
 
         internal volatile bool IsBlocked = false;
 

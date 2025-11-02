@@ -1,11 +1,12 @@
-﻿using QuikGraph;
+﻿using OpenTransitFlow.Infra.Graph;
+using QuikGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTransitFlow.Infra.Graph
+namespace OpenTransitFlow.Infra.Vehicles
 {
     public class Train : BaseVehicle
     {

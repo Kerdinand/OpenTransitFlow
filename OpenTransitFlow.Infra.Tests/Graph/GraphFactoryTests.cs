@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenTransitFlow.Infra.Graph;
+using OpenTransitFlow.Infra.Vehicles;
 using System.Diagnostics;
 using System.Numerics;
 

@@ -1,11 +1,12 @@
-﻿using QuikGraph;
+﻿using OpenTransitFlow.Infra.Graph;
+using QuikGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTransitFlow.Infra.Graph
+namespace OpenTransitFlow.Infra.Vehicles
 {
     public class BaseVehicle : IVehicle
     {
@@ -28,6 +29,13 @@ namespace OpenTransitFlow.Infra.Graph
         public IEnumerable<NetworkGraphEdge> CurrentPath { get; set; } = new List<NetworkGraphEdge> ();
 
         public NetworkGraphEdge currentEdge { get; set; } = null;
+
+
+
+        public virtual async Task<VehicleMoveStatus> MoveVehicleAsync()
+        {
+
+        }
 
         /// <summary>
         /// Function to move vehicle to next possible edge
@@ -63,14 +71,6 @@ namespace OpenTransitFlow.Infra.Graph
         {
             var result = new HashSet<NetworkGraphEdge>();
             var forwardEdges = new HashSet<NetworkGraphEdge>(new[] {currentEdge});
-
-            /*
-             * this.currentEdge.Target.GetValidEdges(currentEdge).ToHashSet() ?? 
-            if (currentEdge.Target is NetworkGraphVertexSignal && ((NetworkGraphVertexSignal)currentEdge.Target).SignalIsInDirectionOfEdge(currentEdge))
-            {
-                forwardEdges.Clear();
-            }
-            */
             while (forwardEdges.Count > 0)
             {
                 var entry = forwardEdges.First();
