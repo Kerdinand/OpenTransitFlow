@@ -34,7 +34,7 @@ namespace OpenTransitFlow.Infra.Vehicles
 
         public virtual async Task<VehicleMoveStatus> MoveVehicleAsync()
         {
-
+            throw new NotImplementedException();
         }
 
         /// <summary>
