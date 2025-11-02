@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Internal;
 using OpenTransitFlow.Infra.Graph;
 using System.Diagnostics;
 using System.Numerics;
@@ -202,7 +203,7 @@ namespace OpenTransitFlow.Infra.Tests.Graph
             var path2 = new NetworkGraphEdge[] { track4II, track2II,  track1II };
 
             var testTrain1 = new Train("Train1", "", 100, path1, track1I);
-            //var testTrain2 = new Train("Train2", "", 100, path2, track3);
+            var testTrain2 = new Train("Train1", "", 100, path1, track4I);
             //       ___ B
             //      /
             // A ------- C
@@ -219,7 +220,123 @@ namespace OpenTransitFlow.Infra.Tests.Graph
             Assert.That(track4II.Target.GetValidEdges(track4II), Does.Contain(track2II));
             Assert.That(track4II.Target.GetValidEdges(track4II).Count, Is.EqualTo(1));
 
-            //Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.))
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+        }
+
+        [Test]
+        public void CheckSignalBehaviourAtSwitch()
+        {
+            var factory = new GraphFactory();
+
+            var node1 = new NetworkGraphVertex("N1", [0, 0]);
+            var node2 = new NetworkGraphVertexSignal("N2", [0, 0]);
+            var node3 = new NetworkGraphVertexSwitch("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+            var node5 = new NetworkGraphVertex("N5", [0, 0]);
+
+            factory.AddNodeRange(new BaseNetworkGraphVertex[] { node1, node2, node3, node4, node5 });
+            factory.AddEdge("T1", "N1", "N2", true);
+            factory.AddEdge("T2", "N2", "N3", true);
+            factory.AddEdge("T3", "N3", "N4", true);
+            factory.AddEdge("T4", "N3", "N5", true);
+            var track1I = factory.GetEdge("T1I");
+            var track1II = factory.GetEdge("T1II");
+
+            var track2I = factory.GetEdge("T2I");
+            var track2II = factory.GetEdge("T2II");
+
+            var track3I = factory.GetEdge("T3I");
+            var track3II = factory.GetEdge("T3II");
+
+            var track4I = factory.GetEdge("T4I");
+            var track4II = factory.GetEdge("T4II");
+
+            node3.AddSingleSideTrack(track2I);
+            node3.AddDivergingTrack(track3I);
+            node3.AddMainDoubleSideTrack(track4I);
+
+
+            var path1 = new NetworkGraphEdge[] { track1I, track2I, track3I };
+            var path2 = new NetworkGraphEdge[] { track4II, track2II, track1II };
+
+
+            var testTrain1 = new Train("Train1", "", 100, path1, track1I);
+            var testTrain2 = new Train("Train1", "", 100, path2, track4II);
+            //       ___ B
+            //      /
+            // A ------- C
+
+
+
+        }
+
+        [Test]
+        public void CheckGetAllEdgesWithinSignals()
+        {
+            var factory = new GraphFactory();
+
+            var node1 = new NetworkGraphVertex("N1", [0, 0]);
+            var node2 = new NetworkGraphVertexSignal("N2", [0, 0]);
+            var node3 = new NetworkGraphVertexSwitch("N3", [0, 0]);
+            var node4 = new NetworkGraphVertex("N4", [0, 0]);
+            var node5 = new NetworkGraphVertexSignal("N5", [0, 0]);
+            var node6 = new NetworkGraphVertex("N6", [0, 0]);
+
+            factory.AddNodeRange(new BaseNetworkGraphVertex[] { node1, node2, node3, node4, node5, node6 });
+            factory.AddEdge("T1", "N1", "N2", true);
+            factory.AddEdge("T2", "N2", "N3", true);
+            factory.AddEdge("T3", "N3", "N4", true);
+            factory.AddEdge("T4", "N3", "N5", true);
+            factory.AddEdge("T5", "N5", "N6", true);
+            var track1I = factory.GetEdge("T1I");
+            var track1II = factory.GetEdge("T1II");
+
+            var track2I = factory.GetEdge("T2I");
+            var track2II = factory.GetEdge("T2II");
+
+            var track3I = factory.GetEdge("T3I");
+            var track3II = factory.GetEdge("T3II");
+
+            var track4I = factory.GetEdge("T4I");
+            var track4II = factory.GetEdge("T4II");
+
+            var track5I = factory.GetEdge("T5I");
+            var track5II = factory.GetEdge("T5II");
+
+            node3.AddSingleSideTrack(track2I);
+            node3.AddDivergingTrack(track3I);
+            node3.AddMainDoubleSideTrack(track4I);
+
+            node2.SignalEdge = track1I;
+            node5.SignalEdge = track5II;
+
+            var path1 = new NetworkGraphEdge[] { track1I, track2I, track3I };
+            var path2 = new NetworkGraphEdge[] { track5II,track4II, track2II, track1II };
+
+
+            var testTrain1 = new Train("Train1", "", 100, path1, track1I);
+            var testTrain2 = new Train("Train2", "", 100, path2, track5II);
+              
+
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds(), Does.Contain(track1I));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds().Count(), Is.EqualTo(1));
+            Assert.That(testTrain2.GetAllEdgesWithinSignalBounds(), Does.Contain(track5II));
+            Assert.That(testTrain2.GetAllEdgesWithinSignalBounds().Count(), Is.EqualTo(1));
+
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds(), Does.Contain(track2I));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds(), Does.Contain(track3I));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds(), Does.Contain(track4I));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds(), Does.Contain(track5I));
+            Assert.That(testTrain1.GetAllEdgesWithinSignalBounds().Count(), Is.EqualTo(4));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+            Assert.That(testTrain1.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.REACHED_DESTINATION));
+            var testTrain3 = new Train("Train3", "", 100, path1, track1I);
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.STOPPED_AT_SIGNAL));
+            testTrain3.Remove();
+            Assert.That(testTrain2.MoveVehicle(), Is.EqualTo(VehicleMoveStatus.MOVING));
+
         }
     }
 }

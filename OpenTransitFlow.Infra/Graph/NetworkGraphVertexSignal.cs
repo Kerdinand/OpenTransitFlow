@@ -28,21 +28,21 @@ namespace OpenTransitFlow.Infra.Graph
         public bool SignalIsInDirectionOfEdge(NetworkGraphEdge edge)
         {
             return edge == SignalEdge;
-        } 
+        }
 
         /// <summary>
         /// Gets allowed speed to pass this signal. 
         /// </summary>
-        public int AllowedVMax(NetworkGraphEdge edge)
+        public int AllowedVMax(NetworkGraphEdge edge, List<NetworkGraphEdge> plannedPath = null)
         {
-            if (CheckIfTracksAreBlocked(edge)) return 0;
+            if (CheckIfTracksAreBlocked(edge, plannedPath)) return 0;
             return 100;
         }
 
         /// <summary>
         /// Explores all tracks that are within signals of the current edge.
         /// </summary>
-        private bool CheckIfTracksAreBlocked(NetworkGraphEdge edge)
+        private bool CheckIfTracksAreBlocked(NetworkGraphEdge edge, List<NetworkGraphEdge> plannedPath = null)
         {
             var tracksToCheck = new HashSet<NetworkGraphEdge>(edge.Target.GetValidEdges(edge));
             
@@ -59,6 +59,12 @@ namespace OpenTransitFlow.Infra.Graph
                 foreach (var newTrack in track.Target.GetValidEdges(track))
                 {
                     if (newTrack.oppositeDirectionEdge != null && newTrack.oppositeDirectionEdge.IsBlocked) return true; 
+                    if (plannedPath != null)
+                    {
+                        
+                        if (plannedPath.Contains(newTrack)) tracksToCheck.Add(newTrack);
+                        continue;
+                    }
                     tracksToCheck.Add(newTrack);
                 }
                 tracksToCheck.Remove(track);
