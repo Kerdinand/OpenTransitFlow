@@ -26,5 +26,20 @@ namespace OpenTransitFlow.Infra.Graph
 
         public Dictionary<string, NetworkGraphEdge> inboundEdges = new Dictionary<string, NetworkGraphEdge>();
         public Dictionary<string, NetworkGraphEdge> outboundEdges = new Dictionary<string, NetworkGraphEdge>();
+
+        /// <summary>
+        /// Checks the side of which the IVehicle is approaching, and returns the edges in direction of travel.
+        /// </summary>
+        /// <param name="incomingEdge"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<NetworkGraphEdge> GetValidEdges(NetworkGraphEdge incomingEdge)
+        {
+            List<NetworkGraphEdge> result = new List<NetworkGraphEdge>();
+            if (inboundEdges.Values.Contains(incomingEdge)) result = new List<NetworkGraphEdge>(outboundEdges.Values);
+            //if (outboundEdges.Values.Contains(incomingEdge)) result = new List<NetworkGraphEdge>(inboundEdges.Values);
+            if (incomingEdge.oppositeDirectionEdge != null) result.Remove(incomingEdge.oppositeDirectionEdge);
+            
+            return result;
+        }
     }
 }

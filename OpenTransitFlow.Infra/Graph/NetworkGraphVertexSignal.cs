@@ -20,43 +20,46 @@ namespace OpenTransitFlow.Infra.Graph
         {
         }
 
-        public NetworkGraphEdge Edge;
+        public NetworkGraphEdge SignalEdge;
+
+        /// <summary>
+        /// Checks if the edge the node is approached on, is from the direction the signal is pointing.
+        /// </summary>
+        public bool SignalIsInDirectionOfEdge(NetworkGraphEdge edge)
+        {
+            return edge == SignalEdge;
+        } 
 
         /// <summary>
         /// Gets allowed speed to pass this signal. 
         /// </summary>
         public int AllowedVMax(NetworkGraphEdge edge)
         {
-            if (checkIfTracksAreBlocked(edge)) return 0;
+            if (CheckIfTracksAreBlocked(edge)) return 0;
             return 100;
         }
 
         /// <summary>
-        /// Check
+        /// Explores all tracks that are within signals of the current edge.
         /// </summary>
-        /// <returns></returns>
-        private bool checkIfTracksAreBlocked(NetworkGraphEdge edge)
+        private bool CheckIfTracksAreBlocked(NetworkGraphEdge edge)
         {
-            var tracksToCheck = new HashSet<NetworkGraphEdge>(outboundEdges.Values);
-            if (edge.oppositeDirectionEdge != null) tracksToCheck.Remove(edge.oppositeDirectionEdge);
+            var tracksToCheck = new HashSet<NetworkGraphEdge>(edge.Target.GetValidEdges(edge));
+            
             while (tracksToCheck.Count > 0)
             {
                 var track = tracksToCheck.First();
-                if (track.IsBlocked) return true;
-                
-                // Only look until a new Signal is found. Tracks behind signal are out of bounds.
-                if (track.Target is NetworkGraphVertexSignal)
+                if (track.IsBlocked || track.oppositeDirectionEdge != null && track.oppositeDirectionEdge.IsBlocked) return true;
+
+                if (track.Target is NetworkGraphVertexSignal && ((NetworkGraphVertexSignal)track.Target).SignalIsInDirectionOfEdge(track))
                 {
                     tracksToCheck.Remove(track);
                     continue;
                 }
-                foreach (var newTrackToCheck in track.Target.outboundEdges.Values)
+                foreach (var newTrack in track.Target.GetValidEdges(track))
                 {
-                    if (newTrackToCheck.oppositeDirectionEdge != null && tracksToCheck.Contains(newTrackToCheck.oppositeDirectionEdge))
-                    {
-                        if (newTrackToCheck.oppositeDirectionEdge.IsBlocked || newTrackToCheck.IsBlocked) return true;
-                    } 
-                    tracksToCheck.Add(newTrackToCheck);
+                    if (newTrack.oppositeDirectionEdge != null && newTrack.oppositeDirectionEdge.IsBlocked) return true; 
+                    tracksToCheck.Add(newTrack);
                 }
                 tracksToCheck.Remove(track);
             }

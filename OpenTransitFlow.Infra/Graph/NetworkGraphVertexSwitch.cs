@@ -19,33 +19,45 @@ namespace OpenTransitFlow.Infra.Graph
         {
         }
 
-        private NetworkGraphEdge singleInbound;
-        private NetworkGraphEdge singleOutbound;
+        public Dictionary<string, NetworkGraphEdge> DivergingEdges = new Dictionary<string, NetworkGraphEdge>();
+        public Dictionary<string, NetworkGraphEdge> SingleSideEdges = new Dictionary<string, NetworkGraphEdge>();
+        public Dictionary<string, NetworkGraphEdge> DoubleSideEdges = new Dictionary<string, NetworkGraphEdge> ();
 
-        private Dictionary<string,NetworkGraphEdge> multipleOutboundEdges = new Dictionary<string, NetworkGraphEdge>();
-        public Dictionary<string, NetworkGraphEdge> outboundEdges => multipleOutboundEdges;
-
-        public void AddOutboundTracks(NetworkGraphEdge edge)
+        public void AddDivergingTrack(NetworkGraphEdge edge)
         {
-            base.outboundEdges.Add(edge.UUID, edge);
+            DivergingEdges.Add(edge.UUID,edge);
+            if (edge.oppositeDirectionEdge != null && !DivergingEdges.Values.Contains(edge.oppositeDirectionEdge)) DivergingEdges.Add(edge.oppositeDirectionEdge.UUID,edge.oppositeDirectionEdge);
         }
 
-        public void AddInboundTrack(NetworkGraphEdge edge)
+        public void AddSingleSideTrack(NetworkGraphEdge edge)
         {
-            singleInbound = edge;
-            inboundEdges.Clear();
-            inboundEdges.Add(edge.UUID, edge);
+            SingleSideEdges.Add(edge.UUID,edge);
+            if (edge.oppositeDirectionEdge != null && !SingleSideEdges.Values.Contains(edge.oppositeDirectionEdge)) SingleSideEdges.Add(edge.oppositeDirectionEdge.UUID, edge.oppositeDirectionEdge);
         }
 
-        public IEnumerable<NetworkGraphEdge> GetValidEdges(NetworkGraphEdge edge)
+        public void AddMainDoubleSideTrack(NetworkGraphEdge edge)
         {
-            if (edge.UUID == inboundEdge.UUID) return outboundEdges.Values;
-            if (inboundEdge.Target == this && inboundEdge.oppositeDirectionEdge != null) return new[] { inboundEdge.oppositeDirectionEdge };
-            if (inboundEdge.Source == this) return new[] { inboundEdge };
+            DoubleSideEdges.Add(edge.UUID,edge);
+            if (edge.oppositeDirectionEdge != null && !DoubleSideEdges.Values.Contains(edge.oppositeDirectionEdge)) DoubleSideEdges.Add(edge.oppositeDirectionEdge.UUID, edge.oppositeDirectionEdge);
 
-            return Enumerable.Empty<NetworkGraphEdge>();
+        }
+
+        public override IEnumerable<NetworkGraphEdge> GetValidEdges(NetworkGraphEdge incomingEdge)
+        {
             
+            if (DivergingEdges.Values.Contains(incomingEdge))
+            {
+                return SingleSideEdges.Values.Where(edge => edge.Source == this);
+            }
+            if (SingleSideEdges.Values.Contains(incomingEdge))
+            {
+                return DoubleSideEdges.Values.Where(edge => edge.Source == this).Union(DivergingEdges.Values.Where(edge => edge.Source == this));
+            }
+            if (DoubleSideEdges.Values.Contains(incomingEdge))
+            {
+                return SingleSideEdges.Values.Where(edge => edge.Source == this);
+            }
+            return Enumerable.Empty<NetworkGraphEdge>();
         }
-
     }
 }
